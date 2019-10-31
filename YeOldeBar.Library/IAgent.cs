@@ -1,13 +1,24 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace YeOldePub.Library
 {
-    internal interface IAgent
+    public enum RunState {
+        Idle,
+        Work,
+        WalkingToBar,
+        WaitingForBeer,
+        WaitingForChair,
+        GoingToChair,
+        DrinkingBeer,
+        LeavingThePub
+    }
+
+    public interface IAgent
     {
-        Enum CurrentState { get; set; }
 
-        void PerformWork();
-
+        void Activate(YeOldePub yeOldePub);
+        //RunState CheckState(YeOldePub yeOldePub);
     }
 }

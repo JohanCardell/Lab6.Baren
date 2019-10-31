@@ -1,26 +1,56 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace YeOldePub.Library
 {
-    public class Bouncer : IYeOldePubObject, IAgent
+    public class Bouncer : IAgent
     {
         //FIRST add random Patron to YeOldePub. Thread.Sleep(3000-10000)
         //THEN check ID. Update YeOldePub with Patron.Name.
         //IF YeOldePub is closed => CurrentState = GoingHome;
-        public Enum CurrentState { get; set; }
         private const int NumOfPatronsToLetInside = 1;
+        private bool _hasGoneHome;
 
-        public Bouncer(Enum currentState)
+        //Constructor
+        public Bouncer(YeOldePub yeOldePub)
         {
-            CurrentState = currentState;
+            _hasGoneHome = false;
+            var task = Task.Factory.StartNew(() => Activate(yeOldePub));
         }
 
-        public void PerformWork()
+        private static int GetLeadTime() //Bouncer takes different amount of time to let inside each patron
         {
-            throw new NotImplementedException();
+            var rnd = new Random();
+            var milliseconds = 1000 * (rnd.Next(3, 11));
+            return milliseconds;
+        }
 
+        public void Activate(YeOldePub yeOldePub)
+        {
+            while (_hasGoneHome is false)
+            {
+                switch (CheckState(yeOldePub))
+                {
+                    case RunState.Work:
+                        for (int patron = 0; patron < NumOfPatronsToLetInside; patron++)
+                        {
+                            var newPatron = new Patron(yeOldePub);
+                            while (!(yeOldePub.Patrons.TryAdd(newPatron.Name, newPatron))) ;
+                        }
+                        Thread.Sleep(GetLeadTime());
+                        break;
+                    case RunState.LeavingThePub:
+                        _hasGoneHome = true;
+                        break;
+                }
+            }
+        }
+
+        private RunState CheckState(YeOldePub yeOldePub)
+        {
+            if (yeOldePub.PubState is PubState.Closed) return RunState.LeavingThePub;
+            return RunState.Work;
         }
     }
 }
