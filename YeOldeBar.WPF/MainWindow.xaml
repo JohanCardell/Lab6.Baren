@@ -5,8 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:YeOldePub.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="YeOldePub" Height="450" Width="800" ResizeMode="NoResize">
     <Grid>
-        
+        <ListBox x:Name="lbBartender" HorizontalAlignment="Left" Height="208" Margin="10,62,0,0" VerticalAlignment="Top" Width="180"/>
+        <ListBox x:Name="lbWaitress" HorizontalAlignment="Left" Height="208" Margin="208,62,0,0" VerticalAlignment="Top" Width="180"/>
+        <ListBox x:Name="lbPatrons" HorizontalAlignment="Left" Height="208" Margin="406,62,0,0" VerticalAlignment="Top" Width="180"/>
+        <Label Content="Bartender" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.68,-0.285" Width="72"/>
+        <Label Content="Waitress" HorizontalAlignment="Left" Margin="208,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.68,-0.285" Width="72"/>
+        <Label Content="Patrons" HorizontalAlignment="Left" Margin="406,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.68,-0.285" Width="72"/>
+        <Button x:Name="btnOnOffWaitress" Content="Pause/Continue" HorizontalAlignment="Left" Margin="208,281,0,0" VerticalAlignment="Top" Width="180" Height="33"/>
+        <Button x:Name="btnOnOffBouncer" Content="Pause/Continue" HorizontalAlignment="Left" Margin="406,281,0,0" VerticalAlignment="Top" Width="180" Height="33"/>
+        <Button x:Name="btnOnOffBartender" Content="Pause/Continue" HorizontalAlignment="Left" Margin="10,281,0,0" VerticalAlignment="Top" Width="180" Height="33"/>
+        <Button x:Name="btnOpenClosePub" Content="Open/Close Ye Old Pub" HorizontalAlignment="Left" Margin="10,319,0,0" VerticalAlignment="Top" Width="576" Height="78" FontSize="36"/>
+        <Label x:Name="lPatrons" Content="Label" HorizontalAlignment="Left" Margin="607,62,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
+        <Label x:Name="lGlass" Content="Label" HorizontalAlignment="Left" Margin="607,122,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
+        <Label x:Name="lChairs" Content="Label" HorizontalAlignment="Left" Margin="607,185,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
+        <Button x:Name="btnOnOffAll" Content="Pause/Continue&#xD;&#xA;ALL threads" HorizontalAlignment="Left" Margin="604,281,0,0" VerticalAlignment="Top" Width="180" Height="33" Click="Button_Click"/>
+
     </Grid>
 </Window>
