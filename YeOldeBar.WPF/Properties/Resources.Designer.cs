@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Baren.WPF.Properties
+namespace YeOldePub.WPF.Properties
 {
 
 

@@ -95,9 +95,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Baren.Library\Baren.Library.csproj">
-      <Project>{a7a7773a-d4ec-4525-ae2a-f7b565dbee05}</Project>
-      <Name>Baren.Library</Name>
+    <ProjectReference Include="..\YeOldeBar.Library\YeOldePub.Library.csproj">
+      <Project>{62bf8576-c269-4577-becb-443af39dc27e}</Project>
+      <Name>YeOldePub.Library</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,7 +1,7 @@
-﻿<Application x:Class="Baren.WPF.App"
+﻿<Application x:Class="YeOldePub.WPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Baren.WPF"
+             xmlns:local="clr-namespace:YeOldePub.WPF"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
