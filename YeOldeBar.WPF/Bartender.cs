@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System;
 
-namespace YeOldePub.Library
+namespace YeOldePub.WPF
 {
 
     public class Bartender : Agent, IMessageLogger

@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using YeOldePub.Library;
 
 namespace YeOldePub.WPF 
 {
@@ -21,14 +20,27 @@ namespace YeOldePub.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        List<ListBox> listBoxes;
         public MainWindow()
         {
             InitializeComponent();
+            while()
+            listBoxes = new List<ListBox> { lbBartender, lbWaitress, lbPatrons };
+            ye
+            
         }
+        
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
         }
+
+        private void BtnOpenClosePub_Click(object sender, RoutedEventArgs e)
+        {
+            DataManager.OpenClosePub();
+        }
+
     }
 }

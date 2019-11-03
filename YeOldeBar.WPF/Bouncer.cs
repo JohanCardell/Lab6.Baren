@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace YeOldePub.Library
+namespace YeOldePub.WPF
 {
     public class Bouncer : Agent
     {

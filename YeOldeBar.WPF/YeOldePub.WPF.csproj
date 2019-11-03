@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{302AF793-CE73-457F-B253-900099265990}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Baren.WPF</RootNamespace>
-    <AssemblyName>Baren.WPF</AssemblyName>
+    <RootNamespace>YeOldePub.WPF</RootNamespace>
+    <AssemblyName>YeOldePub.WPF</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -55,20 +55,32 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Waitress.cs" />
+    <Compile Include="YeOldePub.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Agent.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bartender.cs" />
+    <Compile Include="Bouncer.cs" />
+    <Compile Include="Chair.cs" />
+    <Compile Include="DataManager.cs" />
+    <Compile Include="IMessageLogger.cs" />
+    <Compile Include="ListBoxUpdate.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageLogEventArgs.cs" />
+    <Compile Include="Patron.cs" />
+    <Compile Include="PintGlass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -93,12 +105,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\YeOldeBar.Library\YeOldePub.Library.csproj">
-      <Project>{62bf8576-c269-4577-becb-443af39dc27e}</Project>
-      <Name>YeOldePub.Library</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

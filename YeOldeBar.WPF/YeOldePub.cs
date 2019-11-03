@@ -4,7 +4,7 @@ using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace YeOldePub.Library
+namespace YeOldePub.WPF
 {
     public enum PubState { Open, Closed }
     public class YeOldePub

@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 
 
-namespace YeOldePub.Library
+namespace YeOldePub.WPF
 {
     
     public class DataManager

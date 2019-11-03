@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace YeOldePub.Library
+namespace YeOldePub.WPF
 {
     public enum RunState {
         Idle,
@@ -15,10 +16,12 @@ namespace YeOldePub.Library
         LeavingThePub
     }
 
-    public interface IAgent
+    public abstract class Agent
     {
+        static public event Action<string> LogMessage;
 
-        void Activate(YeOldePub yeOldePub);
+        public ConcurrentQueue<string> MessageLog;
+        public virtual void Activate(YeOldePub yeOldePub) { }
         //RunState CheckState(YeOldePub yeOldePub);
     }
 }

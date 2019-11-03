@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace YeOldePub.Library
+namespace YeOldePub.WPF
 {
     public class Waitress : Agent
     {

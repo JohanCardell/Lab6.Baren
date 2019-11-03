@@ -16,7 +16,7 @@
         <Button x:Name="btnOnOffWaitress" Content="Pause/Continue" HorizontalAlignment="Left" Margin="208,281,0,0" VerticalAlignment="Top" Width="180" Height="33"/>
         <Button x:Name="btnOnOffBouncer" Content="Pause/Continue" HorizontalAlignment="Left" Margin="406,281,0,0" VerticalAlignment="Top" Width="180" Height="33"/>
         <Button x:Name="btnOnOffBartender" Content="Pause/Continue" HorizontalAlignment="Left" Margin="10,281,0,0" VerticalAlignment="Top" Width="180" Height="33"/>
-        <Button x:Name="btnOpenClosePub" Content="Open/Close Ye Old Pub" HorizontalAlignment="Left" Margin="10,319,0,0" VerticalAlignment="Top" Width="576" Height="78" FontSize="36"/>
+        <Button x:Name="btnOpenClosePub" Content="Open/Close Ye Old Pub" HorizontalAlignment="Left" Margin="10,319,0,0" VerticalAlignment="Top" Width="576" Height="78" FontSize="36" Click="BtnOpenClosePub_Click"/>
         <Label x:Name="lPatrons" Content="Label" HorizontalAlignment="Left" Margin="607,62,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
         <Label x:Name="lGlass" Content="Label" HorizontalAlignment="Left" Margin="607,122,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
         <Label x:Name="lChairs" Content="Label" HorizontalAlignment="Left" Margin="607,185,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
