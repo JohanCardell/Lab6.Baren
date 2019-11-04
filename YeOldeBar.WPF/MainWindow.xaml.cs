@@ -20,27 +20,30 @@ namespace YeOldePub.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<ListBox> listBoxes;
+        private List<ListBox> ListBoxes;
+        
         public MainWindow()
         {
             InitializeComponent();
-            while()
-            listBoxes = new List<ListBox> { lbBartender, lbWaitress, lbPatrons };
-            ye
-            
+            ListBoxes = new List<ListBox> { lbBartender, lbPatrons, lbWaitress };
+            DataManager dataManager = new DataManager(ref ListBoxes);
+            //dataManager.MessageLogged += RefreshList;
+
         }
         
 
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void BtnOpenClosePub_Click(object sender, RoutedEventArgs e)
+        private async void BtnOpenClosePub_Click(object sender, RoutedEventArgs e)
         {
             DataManager.OpenClosePub();
         }
+       
+       
 
     }
 }

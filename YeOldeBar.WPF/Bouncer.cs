@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,15 +11,17 @@ namespace YeOldePub.WPF
         //THEN check ID. Update YeOldePub with Patron.Name.
         //IF YeOldePub is closed => CurrentState = GoingHome;
         private const int NumOfPatronsToLetInside = 1;
-        private bool _hasGoneHome;
+        private bool hasGoneHome;
 
         //Constructor
         public Bouncer(YeOldePub yeOldePub)
         {
-            _hasGoneHome = false;
-            var taskBouncer = Task.Factory.StartNew(() => Activate(yeOldePub));
+            YeOldePub = yeOldePub;
+            DataManager = yeOldePub.DataManager;
+            hasGoneHome = false;
+            var taskBouncer = Task.Factory.StartNew(() => AgentCycle(yeOldePub));
         }
-
+              
         private static int GetLeadTime() //Bouncer takes different amount of time to let inside each patron
         {
             var rnd = new Random();
@@ -26,31 +29,32 @@ namespace YeOldePub.WPF
             return milliseconds;
         }
 
-        public override void Activate(YeOldePub yeOldePub)
+        public override async Task AgentCycle(YeOldePub yeOldePub)
         {
-            while (_hasGoneHome is false)
+            while (hasGoneHome is false)
             {
                 switch (CheckState(yeOldePub))
                 {
-                    case RunState.Work:
+                    case RunState.Working:
                         for (int patron = 0; patron < NumOfPatronsToLetInside; patron++)
                         {
                             var newPatron = new Patron(yeOldePub);
-                            while (!(yeOldePub.Patrons.TryAdd(newPatron.Name, newPatron))) ;
+                            while (!(yeOldePub.Patrons.TryAdd(newPatron.Name, newPatron)));
+                            newPatron.DoWork(yeOldePub);
                         }
                         Thread.Sleep(GetLeadTime());
                         break;
                     case RunState.LeavingThePub:
-                        _hasGoneHome = true;
+                        hasGoneHome = true;
                         break;
                 }
             }
         }
 
-        private RunState CheckState(YeOldePub yeOldePub)
+        public override RunState CheckState(YeOldePub yeOldePub)
         {
             if (yeOldePub.currentPubState is PubState.Closed) return RunState.LeavingThePub;
-            return RunState.Work;
+            return RunState.Working;
         }
     }
 }

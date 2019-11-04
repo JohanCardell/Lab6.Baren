@@ -13,7 +13,7 @@ namespace YeOldePub.WPF
         //THEN wash up glasses. Thread.Sleep(15000)
         //IF no Patrons in YeOldePub => CurrentState = GoingHome
         private List<PintGlass> tray;
-        private bool _hasGoneHome;
+        private bool hasGoneHome;
         private const int TimeSpentCollectingPintGlass = 10000;
         private const int TimeSpentWashingPintGlass = 15000;
         private const int TimeSpentIdling = 1000;
@@ -23,27 +23,29 @@ namespace YeOldePub.WPF
         //Constructor
         public Waitress(YeOldePub yeOldePub)
         {
-            CurrentState = RunState.Idle;
+            YeOldePub = yeOldePub;
+            DataManager = yeOldePub.DataManager;
+            CurrentState = RunState.Idling;
             tray = new List<PintGlass>();
-            _hasGoneHome = false;
-            var taskWaitress = Task.Factory.StartNew(() => Activate(yeOldePub));
+            hasGoneHome = false;
+            var taskWaitress = Task.Factory.StartNew(() => AgentCycle(yeOldePub));
         }
 
-        public override void Activate(YeOldePub yeOldePub)
+        public override async Task AgentCycle(YeOldePub yeOldePub)
         {
-            while (_hasGoneHome is false)
+            while (hasGoneHome is false)
             {
                 switch (CheckState(yeOldePub))
                 {
-                    case RunState.Idle:
-                        messageLog.Enqueue($"{DateTime.UtcNow}: Is idling");
+                    case RunState.Idling:
+                        await DataManager.RefreshList(yeOldePub, this, "Is idling");
                         Thread.Sleep(TimeSpentIdling);
                         break;
-                    case RunState.Work:
+                    case RunState.Working:
                         //Gather empty pints from Tables
                         if (yeOldePub.Tables != null)
                         {
-                            messageLog.Enqueue($"{DateTime.UtcNow}: Gathering dirty pints from tables");
+                            await DataManager.RefreshList(yeOldePub, this, "Gathering dirty pints from tables");
                             foreach (var pintGlass in yeOldePub.Tables.Where(g => g.HasBeer is false && g.IsClean is false))
                             {
                                 PintGlass gatheredPintGlass = null;
@@ -53,30 +55,39 @@ namespace YeOldePub.WPF
                             Thread.Sleep(TimeSpentCollectingPintGlass);
 
                             //Clean glass and place on Shelves
-                            messageLog.Enqueue($"{DateTime.UtcNow}: Cleaning {tray.Count} pint(s)");
+                            await DataManager.RefreshList(yeOldePub, this, "Cleaning {tray.Count} pint(s)");
                             foreach (var pintGlass in tray)
                             {
                                 pintGlass.IsClean = true;
-                                var shelved = false;
-                                while (shelved is false) shelved = yeOldePub.Shelves.TryAdd(pintGlass);
+                                while (yeOldePub.Shelves.TryAdd(pintGlass)) ;
                                 tray.Remove(pintGlass);
-                                Thread.Sleep(TimeSpentWashingPintGlass);
                             }
-                            messageLog.Enqueue($"{DateTime.UtcNow}: Finished placing clean pints on the shelves");
+                            Thread.Sleep(TimeSpentWashingPintGlass);
+                            await DataManager.RefreshList(yeOldePub, this, "Finished placing clean pints on the shelves");
                         }
                         break;
                     case RunState.LeavingThePub:
-                        DataManager.waitressLog.Add($"{DateTime.UtcNow}: Going home");
-                        _hasGoneHome = true;
+                        await DataManager.RefreshList(yeOldePub, this, "Going home");
+                        hasGoneHome = true;
                         break;
                 }
             }
         }
-        private RunState CheckState(YeOldePub yeOldePub)
+        public override RunState CheckState(YeOldePub yeOldePub)
         {
             if (yeOldePub.Patrons is null && yeOldePub.currentPubState is PubState.Closed) return RunState.LeavingThePub;
-            if (yeOldePub.Tables != null) return RunState.Work;
-            return RunState.Idle;
+            if (yeOldePub.Tables != null) return RunState.Working;
+            return RunState.Idling;
         }
+
+        //private async Task EmptyTray()
+        //{
+        //    foreach (var pintGlass in tray)
+        //    {
+        //        pintGlass.IsClean = true;
+        //        while (this.YeOldePub.Shelves.TryAdd(pintGlass)) ;
+        //        tray.Remove(pintGlass);
+        //    }
+        //}
     }
 }

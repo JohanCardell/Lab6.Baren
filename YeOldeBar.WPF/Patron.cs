@@ -7,17 +7,7 @@ using System.Threading.Tasks;
 
 namespace YeOldePub.WPF
 {
-    //public enum RunState
-    //{
-    //    WalkingToBar,
-    //    WaitingForBeer,
-    //    WaitingForChair,
-    //    GoingToChair,
-    //    DrinkingBeer,
-    //    LeavingThePub
-    //}
-
-    public class Patron : Agent
+       public class Patron : Agent
     {
         //FIRST go to bar (1 sec)
         //THEN wait for bartender to serve beer
@@ -48,25 +38,28 @@ namespace YeOldePub.WPF
         }
         private const int TimeSpentWalkingToChair = 4000;
         private const int TimeSpentWaiting = 3000;
-        private bool _hasGoneHome;
-        //private bool _isThirsty;
-        //private bool _isSitting;
-        public Chair Chair { get; set; }
-        public PintGlass PintGlass { get; set; }
+        private bool hasGoneHome;
+        private bool isThirsty;
+        private bool isSitting;
+        public Chair chair;
+        public PintGlass pintGlass;
         private ConcurrentQueue<Patron> CurrentQueue { get; set; }
 
         //Constructor
         public Patron(YeOldePub yeOldePub)
         {
+            YeOldePub = yeOldePub;
+            DataManager = yeOldePub.DataManager;
             Name = SetRandomPatronName();
             CurrentState = RunState.WalkingToBar;
-            _hasGoneHome = false;
-            //_isThirsty = true;
-            //_isSitting = false;
-            var taskPatron = Task.Factory.StartNew(() => Activate(yeOldePub));
-            
+            hasGoneHome = false;
+            isThirsty = true;
+            isSitting = false;
+            Task<Patron> taskPatron = new Task<Patron> (this);
+            //Task taskPatron = new Task(() => Activate(yeOldePub));
+            taskPatron.Start();
         }
-
+      
         private static string SetRandomPatronName()
         {
             Random rnd = new Random();
@@ -76,36 +69,34 @@ namespace YeOldePub.WPF
             return randomPatronName;
         }
 
-        public override void Activate(YeOldePub yeOldePub)
+        public override async Task AgentCycle(YeOldePub yeOldePub)
         {
-            while (_hasGoneHome is false)
+            while (hasGoneHome is false)
             {
-                switch (CurrentState)
+                switch (CheckState(yeOldePub))
                 {
                     case RunState.WalkingToBar:
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: {this.Name} entered and is walking to the bar");
+                        await DataManager.RefreshList(yeOldePub, this, $"{Name} entered and is walking to the bar");
                         Thread.Sleep(1000);
                         yeOldePub.PatronsWaitingForBeer.Enqueue(this);
-                        CurrentState = RunState.WaitingForBeer;
                         break;
                     case RunState.WaitingForBeer:
-                        if (PintGlass is null)
+                        if (pintGlass is null)
                         {
-                            MessageLog.Enqueue($"{DateTime.UtcNow}: {this.Name} is waiting for a pint of beer");
+                            await DataManager.RefreshList(yeOldePub, this, $"{Name} is waiting for a pint of beer");
                             Thread.Sleep(TimeSpentWaiting); // Give the bartender som time before trying again
                         }
                         else
                         {
-                            MessageLog.Enqueue($"{DateTime.UtcNow}: {this.Name} got a pint of beer");
-                            MessageLog.Enqueue($"{DateTime.UtcNow}: {this.Name} is waiting for an available chair");
+                            await DataManager.RefreshList(yeOldePub, this,$"{Name} got a pint of beer");
+                            
                             DequeuePatron(CurrentQueue, this);
-                            CurrentState = RunState.WaitingForChair;
                         }
 
                         break;
                     case RunState.WaitingForChair:
                         yeOldePub.PatronsWaitingForChair.Enqueue(this);
-
+                        await DataManager.RefreshList(yeOldePub, this, $"{Name} is waiting for an available chair");
                         //Check to see if patron is first in line
                         var isFirstInQueue = false;
                         while (isFirstInQueue is false)
@@ -117,42 +108,39 @@ namespace YeOldePub.WPF
                             foreach (var chair in yeOldePub.Chairs)
                             {
                                 if (!(chair.IsAvailable)) continue;
-                                this.Chair = chair; //Dibs on available chair
+                                this.chair = chair; //Dibs on available chair
                                 chair.IsAvailable = false;
                                 DequeuePatron(CurrentQueue, this);
-                                CurrentState = RunState.GoingToChair;
                             }
                         }
-
                         break;
-                    case RunState.GoingToChair:
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: {this.Name} is walking to a chair");
+                    case RunState.WalkingToChair:
+                        await DataManager.RefreshList(yeOldePub, this, $"{Name} is walking to a chair");
                         Thread.Sleep(TimeSpentWalkingToChair);
-                        //_isSitting = true;
+                        isSitting = true;
                         CurrentState = RunState.DrinkingBeer;
                         break;
                     case RunState.DrinkingBeer:
                         //Drink beer
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: {this.Name} is drinking a pint of beer");
+                        await DataManager.RefreshList(yeOldePub, this, $"{Name} is drinking a pint of beer");
                         Thread.Sleep(TimeSpentDrinkingBeer);
-                        PintGlass.HasBeer = false;
-                        //_isThirsty = false;
+                        pintGlass.HasBeer = false;
+                        isThirsty = false;
 
                         //Place empty glass on table
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: {this.Name} is done drinking and is getting ready to leave");
-                        yeOldePub.Tables.Add(PintGlass);
-                        //_isSitting = false;
-                        Chair.IsAvailable = true;
+                        await DataManager.RefreshList(yeOldePub, this, $"{Name} is done drinking and is getting ready to leave");
+                        yeOldePub.Tables.Add(pintGlass);
+                        isSitting = false;
+                        chair.IsAvailable = true;
                         CurrentState = RunState.LeavingThePub;
                         break;
                     case RunState.LeavingThePub:
                         //Remove patron from pub
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: {this.Name} is going home");
-                        while (_hasGoneHome is false) _hasGoneHome = yeOldePub.Patrons.TryRemove(this.Name, out _);
-                        _hasGoneHome = true;
+                        await DataManager.RefreshList(yeOldePub, this, $"{Name} is going home");
+                        while (hasGoneHome is false) hasGoneHome = yeOldePub.Patrons.TryRemove(Name, out _);
+                        hasGoneHome = true;
                         break;
                 }
-                //CheckState(yeOldePub);
             }
         }
 
@@ -163,21 +151,19 @@ namespace YeOldePub.WPF
             return patron;
         }
 
-        //public RunState CheckState(YeOldePub yeOldePub)
-        //{
-
-        //    if (PintGlass is null && _isThirsty is true && Chair is null && CurrentQueue is null) return RunState.WalkingToBar;
-        //    if (PintGlass is null && _isThirsty is true && Chair is null && CurrentQueue != null) return RunState.WaitingForBeer;
-        //    if (PintGlass != null && _isThirsty is true && Chair is null && CurrentQueue != null) return RunState.WaitingForChair;
-        //    if (PintGlass != null && _isThirsty is true && Chair != null && CurrentQueue is null) return RunState.GoingToChair;
-        //    if (PintGlass != null && _isThirsty is true && Chair != null && _isSitting is true) return RunState.DrinkingBeer;
-        //    if (PintGlass != null && _isThirsty is false && Chair != null && _isSitting is true) return RunState.LeavingThePub;
-        //    return RunState.Idle;
-        //}
-        public override string ToString()
+        public override RunState CheckState(YeOldePub yeOldePub)
         {
-            return this.Name;
+            if (pintGlass == null && isThirsty == true && chair == null && CurrentQueue == null) return RunState.WalkingToBar;
+            if (pintGlass == null && isThirsty == true && chair == null && CurrentQueue != null) return RunState.WaitingForBeer;
+            if (pintGlass != null && isThirsty == true && chair == null && CurrentQueue != null) return RunState.WaitingForChair;
+            if (pintGlass != null && isThirsty == true && chair != null && CurrentQueue == null) return RunState.WalkingToChair;
+            if (pintGlass != null && isThirsty == true && chair != null && isSitting == true) return RunState.DrinkingBeer;
+            if (pintGlass != null && isThirsty == false && chair != null && isSitting == true) return RunState.LeavingThePub;
+            return RunState.Idling;
         }
+        //public override string ToString()
+        //{
+        //    return this.Name;
+        //}
     }
-
 }

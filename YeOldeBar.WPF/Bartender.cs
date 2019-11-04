@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using System;
 
 namespace YeOldePub.WPF
 {
 
-    public class Bartender : Agent, IMessageLogger
+    public class Bartender : Agent
     {
         // wait for patron
         // then go to Shelves and get glass (3 sec)
@@ -15,78 +14,74 @@ namespace YeOldePub.WPF
         // wait for next patron
         // when no more Patrons in pub, go home
 
-        private bool _hasGoneHome;
-        private PintGlass _pintGlass;
+        private bool hasGoneHome;
+        private PintGlass pintGlass;
         private const int TimeSpentGettingGlass = 3000;
         private const int TimeSpentFillingGlassWithBeer = 3000;
-
-        //public event EventHandler MessageLogged;
 
         //Constructor
         public Bartender(YeOldePub yeOldePub)
         {
-            _hasGoneHome = false;
-            var taskBartender = Task.Factory.StartNew(() => Activate(yeOldePub));
-        }
 
-        public override void Activate(YeOldePub yeOldePub)
+            YeOldePub = yeOldePub;
+            DataManager = yeOldePub.DataManager;
+            AgentTask = new Task(async () => await AgentCycle(yeOldePub));
+            hasGoneHome = false;
+        }
+      
+        public override async Task AgentCycle(YeOldePub yeOldePub)
         {
-            while (_hasGoneHome is false)
+            while (hasGoneHome is false)
             {
                 switch (CheckState(yeOldePub))
                 {
-                    case RunState.Idle:
+                    case RunState.Idling:
                         //Wait before checking for new patron
                         Thread.Sleep(1000);
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: Waiting for a patron");
-                        //OnMessageLogged(new MessageLogEventArgs($"{DateTime.UtcNow}: Waiting for a patron"));
+                        await DataManager.RefreshList(yeOldePub, this, "Waiting for a patron");
                         break;
-                    case RunState.Work:
+                    case RunState.Working:
                         //Identify patron in first in queue
                         Patron patronBeingServed = null;
                         while (patronBeingServed is null)
                         {
                             _ = yeOldePub.PatronsWaitingForBeer.TryPeek(out patronBeingServed);
                         }
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: Taking order from {patronBeingServed}");
+                        await DataManager.RefreshList(yeOldePub, this, $"Taking order from {patronBeingServed}");
 
                         //Get clean glass from Shelves
-                        while (_pintGlass is null)
+                        while (pintGlass is null)
                         {
-                            _ = yeOldePub.Shelves.TryTake(out _pintGlass);
+                            _ = yeOldePub.Shelves.TryTake(out pintGlass);
                         }
                         Thread.Sleep(TimeSpentGettingGlass);
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: Getting a glass from the shelves");
+                        await DataManager.RefreshList(yeOldePub, this, "Getting a glass from the shelves");
 
                         //Fill glass with beer
-                        _pintGlass.HasBeer = true;
-                        _pintGlass.IsClean = false;
+                        pintGlass.HasBeer = true;
+                        pintGlass.IsClean = false;
                         Thread.Sleep(TimeSpentFillingGlassWithBeer);
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: Filling glass with beer");
+                        await DataManager.RefreshList(yeOldePub, this, "Filling glass with beer");
 
                         //Give glass to customer
-                        patronBeingServed.PintGlass = _pintGlass;
-                        _pintGlass = null;
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: Giving beer to {patronBeingServed}");
+                        patronBeingServed.pintGlass = pintGlass;
+                        pintGlass = null;
+                        await DataManager.RefreshList(yeOldePub, this, $"Giving beer to {patronBeingServed}");
                         break;
                     case RunState.LeavingThePub:
-                        MessageLog.Enqueue($"{DateTime.UtcNow}: Going home");
-                        _hasGoneHome = true;
+                        await DataManager.RefreshList(yeOldePub, this, "Going home");
+                        hasGoneHome = true;
                         break;
                 }
             }
         }
 
-        private RunState CheckState(YeOldePub yeOldePub)
+        public override RunState CheckState(YeOldePub yeOldePub)
         {
             //Check to see if bartender should work or go home
             if (yeOldePub.Patrons is null && yeOldePub.currentPubState is PubState.Closed) return RunState.LeavingThePub;
-            if (yeOldePub.PatronsWaitingForBeer.IsEmpty == false && yeOldePub.Shelves.Count > 0) return RunState.Work;
-            return RunState.Idle;
+            if (yeOldePub.PatronsWaitingForBeer.IsEmpty == false && yeOldePub.Shelves.Count > 0) return RunState.Working;
+            return RunState.Idling;
         }
-        //protected virtual void OnMessageLogged(MessageLogEventArgs message)
-        //{
-        //    MessageLogged?.Invoke(this, message);
-        //}
     }
 }

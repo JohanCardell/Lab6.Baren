@@ -1,6 +1,6 @@
 ﻿namespace YeOldePub.WPF
 {
-    public class PintGlass: IYeOldePubObject
+    public class PintGlass
     {
         public bool IsClean { get; set; }
         public bool HasBeer { get; set; }

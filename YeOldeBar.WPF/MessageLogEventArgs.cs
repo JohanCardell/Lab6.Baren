@@ -8,9 +8,9 @@ namespace YeOldePub.WPF
     {
         public string LogMessage { get; set; }
 
-        public MessageLogEventArgs(string message)
+        public MessageLogEventArgs(string _logMessage)
         {
-            LogMessage = message;
+            LogMessage = _logMessage;
         }
     }
 }
