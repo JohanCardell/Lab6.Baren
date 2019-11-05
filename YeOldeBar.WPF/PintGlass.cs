@@ -1,4 +1,4 @@
-﻿namespace YeOldePub.WPF
+﻿namespace YeOldePub
 {
     public class PintGlass
     {

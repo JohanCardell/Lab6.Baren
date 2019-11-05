@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace YeOldePub.WPF
+namespace YeOldePub
 {
     public class Bouncer : Agent
     {
@@ -19,9 +17,8 @@ namespace YeOldePub.WPF
             YeOldePub = yeOldePub;
             DataManager = yeOldePub.DataManager;
             hasGoneHome = false;
-            var taskBouncer = Task.Factory.StartNew(() => AgentCycle(yeOldePub));
         }
-              
+
         private static int GetLeadTime() //Bouncer takes different amount of time to let inside each patron
         {
             var rnd = new Random();
@@ -29,7 +26,7 @@ namespace YeOldePub.WPF
             return milliseconds;
         }
 
-        public override async Task AgentCycle(YeOldePub yeOldePub)
+        public override void AgentCycle(YeOldePub yeOldePub)
         {
             while (hasGoneHome is false)
             {
@@ -39,10 +36,10 @@ namespace YeOldePub.WPF
                         for (int patron = 0; patron < NumOfPatronsToLetInside; patron++)
                         {
                             var newPatron = new Patron(yeOldePub);
-                            while (!(yeOldePub.Patrons.TryAdd(newPatron.Name, newPatron)));
-                            newPatron.DoWork(yeOldePub);
+                            yeOldePub.Patrons.TryAdd(newPatron.Name, newPatron);
+                            //while (!(yeOldePub.Patrons.TryAdd(newPatron.Name, newPatron))) ;
                         }
-                        Thread.Sleep(GetLeadTime());
+                            Thread.Sleep(GetLeadTime());
                         break;
                     case RunState.LeavingThePub:
                         hasGoneHome = true;

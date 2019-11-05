@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace YeOldePub.WPF
+namespace YeOldePub
 {
     public class MessageLogEventArgs: EventArgs
     {

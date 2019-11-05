@@ -1,11 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
 
-namespace YeOldePub.WPF
+namespace YeOldePub
 {
     public class Waitress : Agent
     {
@@ -28,46 +27,44 @@ namespace YeOldePub.WPF
             CurrentState = RunState.Idling;
             tray = new List<PintGlass>();
             hasGoneHome = false;
-            var taskWaitress = Task.Factory.StartNew(() => AgentCycle(yeOldePub));
         }
 
-        public override async Task AgentCycle(YeOldePub yeOldePub)
+        public override void AgentCycle(YeOldePub yeOldePub)
         {
             while (hasGoneHome is false)
             {
                 switch (CheckState(yeOldePub))
                 {
                     case RunState.Idling:
-                        await DataManager.RefreshList(yeOldePub, this, "Is idling");
+                        DataManager.RefreshList(yeOldePub, this, "Is idling");
                         Thread.Sleep(TimeSpentIdling);
                         break;
                     case RunState.Working:
                         //Gather empty pints from Tables
                         if (yeOldePub.Tables != null)
                         {
-                            await DataManager.RefreshList(yeOldePub, this, "Gathering dirty pints from tables");
+                            DataManager.RefreshList(yeOldePub, this, "Gathering dirty pints from tables");
                             foreach (var pintGlass in yeOldePub.Tables.Where(g => g.HasBeer is false && g.IsClean is false))
                             {
                                 PintGlass gatheredPintGlass = null;
-                                while (gatheredPintGlass is null) _ = yeOldePub.Tables.TryTake(out gatheredPintGlass);
+                                while (gatheredPintGlass is null) yeOldePub.Tables.TryTake(out gatheredPintGlass);
                                 tray.Add(gatheredPintGlass);
                             }
                             Thread.Sleep(TimeSpentCollectingPintGlass);
 
                             //Clean glass and place on Shelves
-                            await DataManager.RefreshList(yeOldePub, this, "Cleaning {tray.Count} pint(s)");
+                            DataManager.RefreshList(yeOldePub, this, "Cleaning {tray.Count} pint(s)");
                             foreach (var pintGlass in tray)
                             {
                                 pintGlass.IsClean = true;
-                                while (yeOldePub.Shelves.TryAdd(pintGlass)) ;
-                                tray.Remove(pintGlass);
+                                while (yeOldePub.Shelves.TryAdd(pintGlass)) tray.Remove(pintGlass);
                             }
                             Thread.Sleep(TimeSpentWashingPintGlass);
-                            await DataManager.RefreshList(yeOldePub, this, "Finished placing clean pints on the shelves");
+                            DataManager.RefreshList(yeOldePub, this, "Finished placing clean pints on the shelves");
                         }
                         break;
                     case RunState.LeavingThePub:
-                        await DataManager.RefreshList(yeOldePub, this, "Going home");
+                        DataManager.RefreshList(yeOldePub, this, "Going home");
                         hasGoneHome = true;
                         break;
                 }

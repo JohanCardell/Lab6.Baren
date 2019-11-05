@@ -1,7 +1,6 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
 
-namespace YeOldePub.WPF
+namespace YeOldePub
 {
 
     public class Bartender : Agent
@@ -25,11 +24,10 @@ namespace YeOldePub.WPF
 
             YeOldePub = yeOldePub;
             DataManager = yeOldePub.DataManager;
-            AgentTask = new Task(async () => await AgentCycle(yeOldePub));
             hasGoneHome = false;
         }
-      
-        public override async Task AgentCycle(YeOldePub yeOldePub)
+
+        public override void AgentCycle(YeOldePub yeOldePub)
         {
             while (hasGoneHome is false)
             {
@@ -38,38 +36,32 @@ namespace YeOldePub.WPF
                     case RunState.Idling:
                         //Wait before checking for new patron
                         Thread.Sleep(1000);
-                        await DataManager.RefreshList(yeOldePub, this, "Waiting for a patron");
+                        DataManager.RefreshList(yeOldePub, this, "Waiting for a patron");
                         break;
                     case RunState.Working:
                         //Identify patron in first in queue
                         Patron patronBeingServed = null;
-                        while (patronBeingServed is null)
-                        {
-                            _ = yeOldePub.PatronsWaitingForBeer.TryPeek(out patronBeingServed);
-                        }
-                        await DataManager.RefreshList(yeOldePub, this, $"Taking order from {patronBeingServed}");
+                        while (patronBeingServed is null) yeOldePub.PatronsWaitingForBeer.TryPeek(out patronBeingServed);
+                        DataManager.RefreshList(yeOldePub, this, $"Taking order from {patronBeingServed}");
 
                         //Get clean glass from Shelves
-                        while (pintGlass is null)
-                        {
-                            _ = yeOldePub.Shelves.TryTake(out pintGlass);
-                        }
+                        while (pintGlass is null) yeOldePub.Shelves.TryTake(out pintGlass);
                         Thread.Sleep(TimeSpentGettingGlass);
-                        await DataManager.RefreshList(yeOldePub, this, "Getting a glass from the shelves");
+                        DataManager.RefreshList(yeOldePub, this, "Getting a glass from the shelves");
 
                         //Fill glass with beer
                         pintGlass.HasBeer = true;
                         pintGlass.IsClean = false;
                         Thread.Sleep(TimeSpentFillingGlassWithBeer);
-                        await DataManager.RefreshList(yeOldePub, this, "Filling glass with beer");
+                        DataManager.RefreshList(yeOldePub, this, "Filling glass with beer");
 
                         //Give glass to customer
                         patronBeingServed.pintGlass = pintGlass;
                         pintGlass = null;
-                        await DataManager.RefreshList(yeOldePub, this, $"Giving beer to {patronBeingServed}");
+                        DataManager.RefreshList(yeOldePub, this, $"Giving beer to {patronBeingServed}");
                         break;
                     case RunState.LeavingThePub:
-                        await DataManager.RefreshList(yeOldePub, this, "Going home");
+                        DataManager.RefreshList(yeOldePub, this, "Going home");
                         hasGoneHome = true;
                         break;
                 }

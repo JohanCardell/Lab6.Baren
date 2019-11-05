@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace YeOldePub.WPF
+namespace YeOldePub
 {
     public enum PubState { Open, Closed }
     public class YeOldePub
@@ -14,89 +14,74 @@ namespace YeOldePub.WPF
         public DataManager DataManager { get; set; }
         private const int NumOfPintGLasses = 8;
         private const int NumOfChairs = 9;
-        private const int TimePubIsOpen = 2*60*1000;
+        public const int TimePubIsOpen = 120;
         public Bartender Bartender { get; set; }
         public Bouncer Bouncer { get; set; }
         public Waitress Waitress { get; set; }
         public BlockingCollection<PintGlass> Tables;
         public BlockingCollection<PintGlass> Shelves;
         public BlockingCollection<Chair> Chairs;
-        public ConcurrentDictionary<string, Patron> Patrons;
+        public ConcurrentDictionary<String,Patron> Patrons;
         public ConcurrentBag<Agent> Agents;
-        
         public ConcurrentQueue<Patron> PatronsWaitingForBeer;
         public ConcurrentQueue<Patron> PatronsWaitingForChair;
-        public DateTime timeStamp;
+        //public DateTime timeStamp;
         public System.Diagnostics.Stopwatch stopwatch;
         public ConcurrentBag<Task> tasks;
 
         public Enum currentPubState { get; set; }
 
-        //public YeOldePub YyOldePub()
-        //{
-        //    if (_yeOldePub is null) _yeOldePub = new YeOldePub();
-        //    else _yeOldePub = null;
-        //    return _yeOldePub;
-            
-        //}
         public YeOldePub(DataManager dataManager)
         {
             DataManager = dataManager;
             currentPubState = PubState.Open;
-            Task taskYeOldPub = new Task(OpenPub);
-            Tasks.Add(taskYeOldPub);
-            taskYeOldPub.Start();
-            stopwatch = new System.Diagnostics.Stopwatch();
+            //stopwatch = new System.Diagnostics.Stopwatch();
             PatronsWaitingForBeer = new ConcurrentQueue<Patron>();
             PatronsWaitingForChair = new ConcurrentQueue<Patron>();
-            Patrons = new ConcurrentDictionary<string, Patron>();
+            Patrons = new ConcurrentDictionary<String,Patron>();
             Shelves = new BlockingCollection<PintGlass>();
-            for (int i = 0; i < NumOfPintGLasses; i++) Shelves.Add(new PintGlass());
             Tables = new BlockingCollection<PintGlass>();
-            for (int i = 0; i < NumOfChairs; i++) Chairs.Add(new Chair());
+            for (int i = 0; i < NumOfPintGLasses; i++) Shelves.Add(new PintGlass());
             Chairs = new BlockingCollection<Chair>();
-            Agents = new ConcurrentBag<Agent>();
-            Agents.Add(Bartender = new Bartender(this));
-            Agents.Add(Bouncer = new Bouncer(this));
-            Agents.Add(Waitress = new Waitress(this));
-            List<Task> tasks = new List<Task>();
-        }
-        private async Task OpenPub()
-        {
+            for (int i = 0; i < NumOfChairs; i++) Chairs.Add(new Chair());
+            Bartender = new Bartender(this);
+            Bouncer = new Bouncer(this);
+            Waitress = new Waitress(this);
+
+            Run();
+            //Agents = new ConcurrentBag<Agent>();
+            //Agents.Add(Bartender = new Bartender(this));
+            //Agents.Add(Bouncer = new Bouncer(this));
+            //Agents.Add(Waitress = new Waitress(this));
+            //tasks = new ConcurrentBag<Task>();
+            //Run();
             
-            stopwatch.Start();
-            foreach (var item in Agents)
-            {
-                //Task task = Task.Run(() => item.AgentCycle(yeOldePub));
-                tasks.Add(Task.Run(() => item.AgentCycle(this)));
-            }
-            await Task.WhenAll(tasks);
-
         }
 
-        public ()
+        private void Run()
         {
+            DataManager._timer.Start();
+            Bartender.Run(this);
+            Bouncer.Run(this);
+            Waitress.Run(this);
+            Task.Run(() => IsOpen());
+        }
 
-        }
-        public async Task<Task> StartTask(Agent a)
+        private void IsOpen()
         {
-           Task taskedAgent = Task.Run(() => a.AgentCycle(this));
-           return taskedAgent;
-        }
-        public async Task StopTask(Task t)
-        {
+            while (DataManager._timer.IsEnabled) Thread.Sleep(1);
+            currentPubState = PubState.Closed;
             
-            foreach (Task item in tasks)
-            {
-                 await Task.Delay(-1);
-            }
-            await Task.WhenAll(tasks);
         }
-        public async Task StopTask (Bartender b)
-        {
-            b.pa
-        }
-
-
+        //private async Task Run()
+        //{
+            
+        //    stopwatch.Start();
+        //    foreach (var item in Agents)
+        //    {
+        //        tasks.Add(Task.Run(() => item.AgentCycle(this)));
+        //    }
+        //     await Task.WhenAll(tasks);
+        //}
     }
 }
