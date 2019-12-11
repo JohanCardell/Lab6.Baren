@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace YeOldePub     
+namespace YeOldePubSim     
 {
     public enum RunState {
         Idling,
@@ -26,6 +26,6 @@ namespace YeOldePub
         {
             Task.Run(() => AgentCycle(yeOldePub));
         }
-        public abstract RunState CheckState(YeOldePub yeOldePub);
+        //public abstract RunState CheckState(YeOldePub yeOldePub);
     }
 }

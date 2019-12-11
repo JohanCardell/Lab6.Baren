@@ -8,7 +8,7 @@ using System.Windows.Data;
 using System.Windows.Threading;
 
 
-namespace YeOldePub
+namespace YeOldePubSim
 {
     
     public class DataManager
@@ -18,6 +18,7 @@ namespace YeOldePub
         private MainWindow MainWindow { get; set; }
         public DispatcherTimer _timer;
         private TimeSpan _time;
+        private int counter = 0;
 
         public DataManager(MainWindow mainWindow)
         {
@@ -46,12 +47,19 @@ namespace YeOldePub
 
         public void RefreshList(YeOldePub yeOldePub, Agent messageLogger, string message)
         {
+            counter++;
            // var elapsedTime = yeOldePub.stopwatch.Elapsed.Ticks;
-            string messageConc = message;
+            string messageConc = counter +": "+ message;
             if (messageLogger is Bartender) MainWindow.Dispatcher.Invoke(() => MainWindow.lbBartender.Items.Insert(0,messageConc));
             else if (messageLogger is Bouncer|| messageLogger is Patron) MainWindow.Dispatcher.Invoke(() => MainWindow.lbPatrons.Items.Insert(0, messageConc));
             else if (messageLogger is Waitress) MainWindow.Dispatcher.Invoke(() => MainWindow.lbWaitress.Items.Insert(0, messageConc));
-           
         }
+
+        public void RefreshLabels ()
+        { 
+            MainWindow.Dispatcher.Invoke(() =>
+            MainWindow.NumOfPatrons.Content = "Patrons: " + YeOldePub.numOfPatrons);
+        }  
+            
     }
 }

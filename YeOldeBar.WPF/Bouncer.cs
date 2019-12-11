@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace YeOldePub
+namespace YeOldePubSim
 {
     public class Bouncer : Agent
     {
@@ -48,7 +48,7 @@ namespace YeOldePub
             }
         }
 
-        public override RunState CheckState(YeOldePub yeOldePub)
+        public RunState CheckState(YeOldePub yeOldePub)
         {
             if (yeOldePub.currentPubState is PubState.Closed) return RunState.LeavingThePub;
             return RunState.Working;

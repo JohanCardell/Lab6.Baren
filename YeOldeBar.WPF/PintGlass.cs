@@ -1,4 +1,4 @@
-﻿namespace YeOldePub
+﻿namespace YeOldePubSim
 {
     public class PintGlass
     {

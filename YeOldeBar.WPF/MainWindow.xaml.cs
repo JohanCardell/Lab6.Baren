@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Diagnostics;
 
-namespace YeOldePub
+namespace YeOldePubSim
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -29,7 +29,8 @@ namespace YeOldePub
             InitializeComponent();
            
             dataManager = new DataManager(this);
-           // lbBartender.i
+            
+            // lbBartender.i
             //PubCountdown.Content = new System.Diagnostics.Stopwatch();
           
         }

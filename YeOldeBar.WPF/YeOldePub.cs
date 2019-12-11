@@ -5,13 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace YeOldePub
+namespace YeOldePubSim
 {
     public enum PubState { Open, Closed }
     public class YeOldePub
     {
         //private YeOldePub _yeOldePub;
         public DataManager DataManager { get; set; }
+        public int numOfPatrons = 0;
         private const int NumOfPintGLasses = 8;
         private const int NumOfChairs = 9;
         public const int TimePubIsOpen = 120;
@@ -47,6 +48,7 @@ namespace YeOldePub
             Bartender = new Bartender(this);
             Bouncer = new Bouncer(this);
             Waitress = new Waitress(this);
+            
 
             Run();
             //Agents = new ConcurrentBag<Agent>();
@@ -69,9 +71,8 @@ namespace YeOldePub
 
         private void IsOpen()
         {
-            while (DataManager._timer.IsEnabled) Thread.Sleep(1);
+            Thread.Sleep(120*1000);
             currentPubState = PubState.Closed;
-            
         }
         //private async Task Run()
         //{
