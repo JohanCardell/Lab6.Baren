@@ -19,6 +19,7 @@ namespace YeOldePubSim
 
     public abstract class Agent
     {
+        public bool hasGoneHome = false;
         public DataManager DataManager { get; set; }
         public YeOldePub YeOldePub { get; set; }
         public abstract void AgentCycle(YeOldePub yeOldePub);
@@ -26,6 +27,5 @@ namespace YeOldePubSim
         {
             Task.Run(() => AgentCycle(yeOldePub));
         }
-        //public abstract RunState CheckState(YeOldePub yeOldePub);
     }
 }

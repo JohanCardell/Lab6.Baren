@@ -13,10 +13,10 @@ namespace YeOldePubSim
         // wait for next patron
         // when no more Patrons in pub, go home
 
-        private bool hasGoneHome;
         private PintGlass pintGlass;
         private const int TimeSpentGettingGlass = 3000;
         private const int TimeSpentFillingGlassWithBeer = 3000;
+        private bool hasBeenProductive = true;
 
         //Constructor
         public Bartender(YeOldePub yeOldePub)
@@ -24,7 +24,6 @@ namespace YeOldePubSim
 
             YeOldePub = yeOldePub;
             DataManager = yeOldePub.DataManager;
-            hasGoneHome = false;
         }
 
         public override void AgentCycle(YeOldePub yeOldePub)
@@ -34,9 +33,13 @@ namespace YeOldePubSim
                 switch (CheckState(yeOldePub))
                 {
                     case RunState.Idling:
-                        //Wait before checking for new patron
-                       // DataManager.RefreshList(yeOldePub, this, "Waiting for a patron");
-                        Thread.Sleep(2000);
+                        if (hasBeenProductive is true)
+                        {
+                            if (yeOldePub.PatronsWaitingForBeer.IsEmpty) DataManager.RefreshList(this, "Waiting for a patron");
+                            else if (yeOldePub.Shelves.Count is 0) DataManager.RefreshList(this, "Waiting for clean pints");
+                        }
+                        hasBeenProductive = false;
+                        Thread.Sleep(100);
                         break;
                     case RunState.Working:
                         //Identify patron in first in queue
@@ -47,27 +50,28 @@ namespace YeOldePubSim
                         }
                         if (patronBeingServed.pintGlass is null)
                         {
-                            DataManager.RefreshList(yeOldePub, this, $"Taking order from {patronBeingServed.Name}");
+                            DataManager.RefreshList(this, $"Taking order from {patronBeingServed.Name}");
 
                             //Get clean glass from Shelves
                             while (pintGlass is null) yeOldePub.Shelves.TryTake(out pintGlass);
+                            DataManager.RefreshList(this, "Getting a glass from the shelves");
                             Thread.Sleep(TimeSpentGettingGlass);
-                            DataManager.RefreshList(yeOldePub, this, "Getting a glass from the shelves");
 
                             //Fill glass with beer
                             pintGlass.HasBeer = true;
                             pintGlass.IsClean = false;
+                            DataManager.RefreshList(this, "Filling glass with beer");
                             Thread.Sleep(TimeSpentFillingGlassWithBeer);
-                            DataManager.RefreshList(yeOldePub, this, "Filling glass with beer");
 
                             //Give glass to customer
                             patronBeingServed.pintGlass = pintGlass;
-                            DataManager.RefreshList(yeOldePub, this, $"Giving beer to {patronBeingServed.Name}");
+                            DataManager.RefreshList(this, $"Giving beer to {patronBeingServed.Name}");
                             pintGlass = null;
+                            hasBeenProductive = true;
                         }
                         break;
                     case RunState.LeavingThePub:
-                        DataManager.RefreshList(yeOldePub, this, "Going home");
+                        DataManager.RefreshList(this, "Going home");
                         hasGoneHome = true;
                         break;
                 }
@@ -76,9 +80,8 @@ namespace YeOldePubSim
 
         public RunState CheckState(YeOldePub yeOldePub)
         {
-            Thread.Sleep(1000);
             //Check to see if bartender should work or go home
-            if (yeOldePub.Patrons is null && yeOldePub.currentPubState is PubState.Closed) return RunState.LeavingThePub;
+            if (yeOldePub.Patrons.IsEmpty && yeOldePub.currentPubState is PubState.Closed) return RunState.LeavingThePub;
             else if (yeOldePub.PatronsWaitingForBeer.IsEmpty == false && yeOldePub.Shelves.Count > 0) return RunState.Working;
             else return RunState.Idling;
         }

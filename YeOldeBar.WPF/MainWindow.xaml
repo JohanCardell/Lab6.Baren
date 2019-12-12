@@ -5,19 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:YeOldePubSim"
         mc:Ignorable="d"
-        Title="YeOldePub" Height="450" Width="800" ResizeMode="NoResize">
-    <Grid>
-        <ListBox x:Name="lbBartender" HorizontalAlignment="Left" Height="208" Margin="10,62,0,0" VerticalAlignment="Top" Width="180" FontSize="10"/>
-        <ListBox x:Name="lbWaitress" HorizontalAlignment="Left" Height="208" Margin="208,62,0,0" VerticalAlignment="Top" Width="180" FontSize="10"/>
-        <ListBox x:Name="lbPatrons" HorizontalAlignment="Left" Height="208" Margin="406,62,0,0" VerticalAlignment="Top" Width="180" FontSize="10"/>
+        Title="YeOldePub" Height="499.275" Width="884" ResizeMode="NoResize">
+    <Grid RenderTransformOrigin="0.5,0.5" Margin="0,0,-5.8,-20">
+        <ListBox x:Name="lbBartender" HorizontalAlignment="Left" Height="272" Margin="10,62,0,0" VerticalAlignment="Top" Width="228" FontSize="10"/>
+        <ListBox x:Name="lbWaitress" HorizontalAlignment="Left" Height="272" Margin="243,62,0,0" VerticalAlignment="Top" Width="200" FontSize="10"/>
+        <ListBox x:Name="lbPatrons" HorizontalAlignment="Left" Height="272" Margin="451,62,0,0" VerticalAlignment="Top" Width="263" FontSize="10"/>
         <Label Content="Bartender" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.68,-0.285" Width="72"/>
-        <Label Content="Waitress" HorizontalAlignment="Left" Margin="208,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.68,-0.285" Width="72"/>
-        <Label Content="Patrons" HorizontalAlignment="Left" Margin="406,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.68,-0.285" Width="72"/>
-        <Button x:Name="btnOpenClosePub" Content="Open/Close Ye Old Pub" HorizontalAlignment="Left" Margin="10,319,0,0" VerticalAlignment="Top" Width="576" Height="78" FontSize="36" Click="BtnOpenClosePub_Click"/>
-        <Label x:Name="PubCountdown" Content="Timer&#xD;&#xA;" HorizontalAlignment="Left" Margin="607,62,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
-        <Label x:Name="NumOfPints" Content="Pints" HorizontalAlignment="Left" Margin="607,118,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
-        <Label x:Name="NumOfChairs" Content="Chairs" HorizontalAlignment="Left" Margin="607,177,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
-        <Label x:Name="NumOfPatrons" Content="Patrons" HorizontalAlignment="Left" Margin="607,239,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
+        <Label Content="Waitress" HorizontalAlignment="Left" Margin="243,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.68,-0.285" Width="72"/>
+        <Label Content="Patrons" HorizontalAlignment="Left" Margin="463,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.68,-0.285" Width="72"/>
+        <Button x:Name="btnOpenPub" Content="Open Ye Old Pub" HorizontalAlignment="Left" Margin="138,356,0,0" VerticalAlignment="Top" Width="576" Height="78" FontSize="36" Click="BtnOpenPub_Click"/>
+        <Label x:Name="PubCountdown" Content="Timer&#xD;&#xA;" HorizontalAlignment="Left" Margin="719,62,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
+        <Label x:Name="NumOfPints" Content="Pints" HorizontalAlignment="Left" Margin="719,155,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
+        <Label x:Name="NumOfChairs" Content="Chairs" HorizontalAlignment="Left" Margin="719,124,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
+        <Label x:Name="NumOfPatrons" Content="Patrons" HorizontalAlignment="Left" Margin="719,93,0,0" VerticalAlignment="Top" Height="31" Width="154"/>
 
     </Grid>
 </Window>
