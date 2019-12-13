@@ -5,10 +5,9 @@ namespace YeOldePubSim
 {
     public class Bouncer : Agent
     {
-        //FIRST add random Patron to YeOldePub. Thread.Sleep(3000-10000)
-        //THEN check ID. Update YeOldePub with Patron.Name.
-        //IF YeOldePub is closed => CurrentState = GoingHome;
+        public bool partyBusMode = false;
         private int NumOfPatronsToLetInside = 1;
+
         //Constructor
         public Bouncer(YeOldePub yeOldePub)
         {
@@ -16,8 +15,9 @@ namespace YeOldePubSim
             DataManager = yeOldePub.DataManager;
         }
 
-        private static int GetLeadTime() //Bouncer takes different amount of time to let inside each patron
+        private static int GetLeadTime()
         {
+            //Bouncer takes different amount of time to let inside each patron
             var rnd = new Random();
             var milliseconds = 1000 * (rnd.Next(3, 11));
             return milliseconds;
@@ -32,10 +32,10 @@ namespace YeOldePubSim
                     case RunState.Working:
                         Thread.Sleep(GetLeadTime());
                         NumOfPatronsToLetInside = 1;
-                        if (YeOldePub.partyBusMode is true && DataManager.time <= TimeSpan.FromSeconds(YeOldePub.TimePubIsOpen - 20.0))
+                        if (partyBusMode is true && DataManager.time <= TimeSpan.FromSeconds(YeOldePub.TimePubIsOpen - 20.0))
                         {
                             NumOfPatronsToLetInside = 20;
-                            yeOldePub.partyBusMode = false;
+                            partyBusMode = false;
                         }
                         for (int patron = 0; patron < NumOfPatronsToLetInside; patron++)
                         {

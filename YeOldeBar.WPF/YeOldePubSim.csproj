@@ -57,7 +57,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="MessageObject.cs" />
     <Compile Include="Waitress.cs" />
     <Compile Include="YeOldePub.cs" />
     <Page Include="MainWindow.xaml">
@@ -79,7 +78,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessageLogEventArgs.cs" />
     <Compile Include="Patron.cs" />
     <Compile Include="PintGlass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

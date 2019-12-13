@@ -22,7 +22,6 @@ namespace YeOldePubSim
         {
             YeOldePub = yeOldePub;
             DataManager = yeOldePub.DataManager;
-            CurrentState = RunState.Idling;
             tray = new ConcurrentBag<PintGlass>();
         }
 

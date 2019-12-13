@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Linq;
+﻿using System.Threading.Tasks;
 
-namespace YeOldePubSim     
+namespace YeOldePubSim
 {
-    public enum RunState {
+    public enum RunState
+    {
         Idling,
         Working,
         WalkingToBar,

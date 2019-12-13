@@ -14,6 +14,8 @@ namespace YeOldePubSim
         //IF no empty chair, IDLE
         //WHEN seated, drink beer (20-30 se)
         //WHEN beer is finished, LEAVE chair and pub
+        private const int TimeSpentWalkingToChair = 4000;
+        private const int TimeSpentWaiting = 100;
         private static List<string> PatronNames = new List<string>()
         {
             "Adam", "Angela", "Aby", "Bob" ,"Barbara", "Bill", "Caesar", "Christine", "Charlie", "Charles", "David", "Diane", "Dave",
@@ -21,12 +23,9 @@ namespace YeOldePubSim
             "Ivan", "Irene", "Joe", "Jack", "Jill", "Jenny", "Jen", "Jenifer", "Ken", "Kendrik", "Kelly", "Leroy", "Laura", "Mandrake", "Molly",
             "Newman", "Naomi", "Otto", "Ophelia", "Peter", "Pauleen"
         };
-        public Enum CurrentState { get; set; }
-        public Enum PreviousState { get; set; }
         public string Name { get; set; }
+        public Enum CurrentState { get; set; }
         public int TimeSpentDrinkingBeer { get; set; }
-        private const int TimeSpentWalkingToChair = 4000;
-        private const int TimeSpentWaiting = 100;
         public Chair chair;
         public PintGlass pintGlass;
         private ConcurrentQueue<Patron> CurrentQueue { get; set; }

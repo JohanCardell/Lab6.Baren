@@ -14,7 +14,7 @@ namespace YeOldePubSim
 
         public TimeSpan time;
         private DispatcherTimer timer;
-        private int counter = 0;
+        private int logCount = 0;
 
         public DataManager(MainWindow mainWindow)
         {
@@ -39,15 +39,16 @@ namespace YeOldePubSim
                     YeOldePub.Waitress.hasGoneHome is true
                     ) timer.Stop();
                 time = time.Add(TimeSpan.FromSeconds(-1));
-                
+
                 RefreshLabels();
             }, Application.Current.Dispatcher);
+            YeOldePub.Run();
         }
 
         public void RefreshList(Agent messageLogger, string message)
         {
-            counter++;
-            string messageConc = counter + ": " + message;
+            logCount++;
+            string messageConc = logCount + ": " + message;
             if (messageLogger is Bartender) MainWindow.Dispatcher.Invoke(() => MainWindow.lbBartender.Items.Insert(0, messageConc));
             else if (messageLogger is Bouncer || messageLogger is Patron) MainWindow.Dispatcher.Invoke(() => MainWindow.lbPatrons.Items.Insert(0, messageConc));
             else if (messageLogger is Waitress) MainWindow.Dispatcher.Invoke(() => MainWindow.lbWaitress.Items.Insert(0, messageConc));
